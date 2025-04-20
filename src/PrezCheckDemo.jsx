@@ -1,24 +1,63 @@
 
-# Optional: create project folder & init
-mkdir prezcheck && cd prezcheck
-npm init -y
+import { useState } from "react";
 
-# Copy `PrezCheckDemo.jsx` into src/
-mkdir src && touch src/PrezCheckDemo.jsx
-# (paste code from canvas)
+export default function PrezCheckDemo() {
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
-# Add package deps
-npm install react react-dom
+  const handleCheck = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setResult({
+        verdict: "❌ Usann",
+        inaccuracies: [
+          "Andre verdenskrig startet ikke i 1942, men 1. september 1939.",
+          "Det totale antallet drepte var omtrent 70–85 millioner, ikke 20."
+        ],
+        correctVersion:
+          "Andre verdenskrig startet 1. september 1939 og anslagsvis 70–85 millioner mennesker døde.",
+        sources: [
+          { name: "Wikipedia – World War II", url: "https://en.wikipedia.org/wiki/World_War_II" },
+          { name: "Britannica – World War II", url: "https://www.britannica.com/event/World-War-II" }
+        ]
+      });
+      setLoading(false);
+    }, 1500);
+  };
 
-# Create Git repo & push to GitHub
-git init
+  return (
+    <div style={{ fontFamily: "sans-serif", padding: 20 }}>
+      <h1>PrezCheck – demo</h1>
 
-# First commit
-git add .
-git commit -m "Initial PrezCheck prototype"
+      <textarea
+        rows={4}
+        style={{ width: "100%", padding: 10 }}
+        placeholder="Skriv en påstand her …"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+      />
 
-# Create repo on GitHub UI (public or private)
-# Then push:
-git remote add origin https://github.com/<your_user>/prezcheck.git
-git branch -M main
-git push -u origin main
+      <button onClick={handleCheck} disabled={loading} style={{ marginTop: 10 }}>
+        {loading ? "Sjekker …" : "Sjekk påstand"}
+      </button>
+
+      {result && (
+        <div style={{ marginTop: 20, background: "#eee", padding: 15 }}>
+          <p><strong>Vurdering:</strong> {result.verdict}</p>
+          <p><strong>Feil i påstanden:</strong></p>
+          <ul>
+            {result.inaccuracies.map((f, i) => <li key={i}>{f}</li>)}
+          </ul>
+          <p><strong>Rett versjon:</strong> {result.correctVersion}</p>
+          <p><strong>Kilder:</strong></p>
+          <ul>
+            {result.sources.map((s, i) => (
+              <li key={i}><a href={s.url} target="_blank" rel="noopener noreferrer">{s.name}</a></li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
